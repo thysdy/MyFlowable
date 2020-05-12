@@ -18,13 +18,12 @@ import java.util.stream.Collectors;
 @Service
 public class TaskService extends BaseProcessService {
     @Autowired
-    TaskInfoDao repairInfoDao;
-    private static final int dataSize = 2;
+    TaskInfoDao taskInfoDao;
 
     public List<TaskVo> getMyTasks(ProcessInstanceQueryVo processQueryVo) throws MyException {
         List<TaskVo> tasks = new ArrayList<>();
         try {
-            tasks = repairInfoDao.getApplyingTasks(processQueryVo);
+            tasks = taskInfoDao.getApplyingTasks(processQueryVo);
             for (TaskVo task : tasks) {
                 Map<String, Object> processVariables = runtimeService.getVariables(task.getProcessInstanceId());
                 task.setVariables(processVariables);
@@ -45,7 +44,7 @@ public class TaskService extends BaseProcessService {
     public List<TaskVo> getMyApplyedTasks(ProcessInstanceQueryVo processQueryVo) throws MyException {
         List<TaskVo> tasks = new ArrayList<>();
         try {
-            tasks = repairInfoDao.getMyApplyedTasks(processQueryVo);
+            tasks = taskInfoDao.getMyApplyedTasks(processQueryVo);
             for (TaskVo task : tasks) {
                 String instanceId = task.getProcessInstanceId();
                 List<HistoricVariableInstance> list = historyService.createHistoricVariableInstanceQuery().processInstanceId(instanceId).list();
@@ -56,9 +55,9 @@ public class TaskService extends BaseProcessService {
                     Object object = historicVariableInstance.getValue();
                     variables.put(name, object);
                 }
-                int state= (int) variables.get("state");
-                if (null != task.getEndTime()&&2!=state) {
-                variables.put("state",3);
+                int state = (int) variables.get("state");
+                if (null != task.getEndTime() && 2 != state) {
+                    variables.put("state", 3);
                 }
                 task.setVariables(variables);
             }
@@ -76,16 +75,15 @@ public class TaskService extends BaseProcessService {
      * @param request
      * @return
      */
-    public int doTask(RequestVo request) throws MyException {
-        int i = 0;
+    public void doTask(RequestVo request) throws MyException {
         try {
             String message = request.getMessage();
             String userId = request.getUserCode();
             Map<String, Object> variables = request.getVariables();
-            if(null!=variables.get("agree")){
-                Boolean agree= (Boolean) variables.get("agree");
-                if(!agree){
-                    variables.put("state",2);
+            if (null != variables.get("agree")) {
+                Boolean agree = (Boolean) variables.get("agree");
+                if (!agree) {
+                    variables.put("state", 2);
                 }
             }
             for (String id : request.getIds()) {
@@ -103,7 +101,6 @@ public class TaskService extends BaseProcessService {
         } catch (Exception e) {
             throw new MyException(CodeEnum.commonException);
         }
-        return i;
     }
 
     /**
@@ -112,8 +109,7 @@ public class TaskService extends BaseProcessService {
      * @param request
      * @return
      */
-    public ReturnVoT rollback(RequestVo request) {
-        ReturnVoT returnVo = new ReturnVoT();
+    public void rollback(RequestVo request) throws MyException {
         String target = request.getTarget();
         String[] t = target.split(",");
         request.setTargetKey(t[0]);
@@ -133,32 +129,24 @@ public class TaskService extends BaseProcessService {
                     CommentTypeEnum.TH.toString(), message);
             //           修改报修状态
         } catch (Exception e) {
+            throw new MyException(CodeEnum.commonException);
         }
-        return returnVo;
     }
 
-    public ReturnVoT getBackNode(String processInstanceId) {
-        ReturnVoT returnVo = new ReturnVoT();
+    public List<FlowNodeVo> getBackNode(String processInstanceId) throws MyException {
+        List<FlowNodeVo> list = new ArrayList<>();
         try {
-            List<FlowNodeVo> nodes = null;
-            nodes = repairInfoDao.getBackNode(processInstanceId);
+            list = taskInfoDao.getBackNode(processInstanceId);
             //去重合并
-            List<FlowNodeVo> datas = nodes.stream().collect(
+            List<FlowNodeVo> datas = list.stream().collect(
                     Collectors.collectingAndThen(Collectors.toCollection(() ->
                             new TreeSet<>(Comparator.comparing(nodeVo -> nodeVo.getNodeId()))), ArrayList::new));
             //排序
             datas.sort(Comparator.comparing(FlowNodeVo::getEndTime));
-            if (nodes.size() > 0) {
-                returnVo.setBoo(true);
-                returnVo.setInfo("获取退回节点成功！");
-                returnVo.setObject(datas);
-            } else {
-                returnVo.setInfo("当前无可退回节点！");
-            }
         } catch (Exception e) {
-            returnVo.setInfo("获取退回节点失败！");
+            throw new MyException(CodeEnum.commonException);
         }
-        return returnVo;
+        return list;
     }
 
 }

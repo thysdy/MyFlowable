@@ -24,9 +24,13 @@ public class InstanceController {
      * @return
      */
     @PostMapping("/saProcessInstanceById")
-    public ReturnVoT saProcessInstanceById(@RequestBody RequestVo request) {
-        return repairInstanceService.suspendOrActivateProcessInstanceById(request.getIds(), request.getSuspensionState());
-
+    public ReturnVo saProcessInstanceById(@RequestBody RequestVo request) {
+        try {
+            repairInstanceService.suspendOrActivateProcessInstanceById(request.getIds(), request.getSuspensionState());
+            return ReturnVo.success();
+        } catch (MyException e) {
+            return ReturnVo.exception(e);
+        }
     }
 
     /**
@@ -54,7 +58,7 @@ public class InstanceController {
     @PostMapping("/getFlowableInstances")
     public ReturnVo getFlowableInstances(@RequestBody ProcessInstanceQueryVo queryVo) {
         try {
-          List<ProcessInstanceVo> list= repairInstanceService.getFlowableInstances(queryVo);
+            List<ProcessInstanceVo> list = repairInstanceService.getFlowableInstances(queryVo);
             return ReturnVo.success(list);
         } catch (MyException e) {
             return ReturnVo.exception(e);

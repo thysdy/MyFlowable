@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -24,10 +25,12 @@ public class ApplicationController {
     @PostMapping("/startProcessInstance")
     public ReturnVo startProcessInstance(@RequestBody List<StartProcessInstance> startProcessInstance) {
         try {
+            List<String> ids = new ArrayList<>();
             for (StartProcessInstance instance : startProcessInstance) {
-                applicationService.startProcessInstance(instance);
+                String id = applicationService.startProcessInstance(instance);
+                ids.add(id);
             }
-            return ReturnVo.success();
+            return ReturnVo.success(ids);
         } catch (MyException e) {
             return ReturnVo.exception(e);
         }
@@ -40,8 +43,13 @@ public class ApplicationController {
      * @return
      */
     @PostMapping("/getCommentsByInstanceId")
-    public ReturnVoT getCommentsByInstanceId(@RequestBody RequestVo requestVo) {
-        return applicationService.getCommentsByInstanceId(requestVo.getId());
+    public ReturnVo getCommentsByInstanceId(@RequestBody RequestVo requestVo) {
+        try {
+            List<Comment> comments = applicationService.getCommentsByInstanceId(requestVo.getId());
+            return ReturnVo.success(comments);
+        } catch (MyException e) {
+            return ReturnVo.exception(e);
+        }
     }
 
     /**
@@ -52,22 +60,14 @@ public class ApplicationController {
      * @return
      */
     @PostMapping("/getInstanceProgress")
-    public ReturnVoT getImage(@RequestBody RequestVo requestVo, HttpServletResponse response) {
+    public ReturnVo getImage(@RequestBody RequestVo requestVo, HttpServletResponse response) {
 
-        return applicationService.createImage(requestVo.getInstanceId(), response);
-
+        try {
+            applicationService.createImage(requestVo.getInstanceId(), response);
+            return ReturnVo.success();
+        } catch (MyException e) {
+            return ReturnVo.exception(e);
+        }
     }
 
-    /**
-     * 导出到Excel
-     *
-     * @param requestVo
-     * @param response
-     * @return
-     */
-    @PostMapping("/exportExcel")
-    @ResponseBody
-    public ReturnVoT exportExcel(@RequestBody RequestVo requestVo, HttpServletResponse response) {
-        return applicationService.exportExcel(requestVo.getIds(), response);
-    }
 }

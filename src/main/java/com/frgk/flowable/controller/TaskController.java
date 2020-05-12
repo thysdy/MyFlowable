@@ -71,8 +71,13 @@ public class TaskController {
      * @return
      */
     @PostMapping("/getBackNode")
-    public ReturnVoT getBackNode(@RequestBody RequestVo requestVo) {
-        return taskService.getBackNode(requestVo.getId());
+    public ReturnVo getBackNode(@RequestBody RequestVo requestVo) {
+        try {
+            taskService.getBackNode(requestVo.getId());
+            return ReturnVo.success();
+        } catch (MyException e) {
+            return ReturnVo.exception(e);
+        }
     }
 
     /**
@@ -82,7 +87,12 @@ public class TaskController {
      * @return
      */
     @PostMapping("/backRoll")
-    public ReturnVoT backRoll(@RequestBody RequestVo request) {
-        return taskService.rollback(request);
+    public ReturnVo backRoll(@RequestBody RequestVo request) {
+        try {
+            taskService.rollback(request);
+            return ReturnVo.success();
+        } catch (MyException e) {
+            return ReturnVo.exception(e);
+        }
     }
 }

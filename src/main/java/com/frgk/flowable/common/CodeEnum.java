@@ -3,7 +3,8 @@ package com.frgk.flowable.common;
 public enum CodeEnum {
     success(200, "SUCCESS！"),
     nameRepect(100, "用户名重复！"),
-    commonException(300, "EXCEPTION！");
+    commonException(300, "EXCEPTION！"),
+    ioException(301, "IOEXCEPTION！");
 
     private Integer code;
 

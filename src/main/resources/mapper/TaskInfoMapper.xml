@@ -9,11 +9,6 @@ select * from ACT_HI_COMMENT c left join ACT_ID_USER u on c.USER_ID_=u.ID_ where
     <select id="getAllProcessInstanceIds" resultType="String">
     select PROC_INST_ID_ from ACT_HI_PROCINST;
 </select>
-    <resultMap id="getCommentsMap" type="Comments">
-
-        <collection property="comments" resultMap="CommentMap"></collection>
-
-    </resultMap>
 
     <resultMap id="CommentMap" type="CommentVo">
         <id column="PROC_INST_ID_"></id>

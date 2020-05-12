@@ -7,7 +7,6 @@ import com.frgk.flowable.dao.TaskInfoDao;
 import com.frgk.flowable.entity.*;
 import com.frgk.flowable.flowable.BaseProcessService;
 import com.frgk.flowable.flowable.DeleteFlowableProcessInstanceCmd;
-import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.variable.api.history.HistoricVariableInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,7 @@ public class InstanceService extends BaseProcessService {
     @Autowired
     ProcessInstanceDao processInstanceDao;
     @Autowired
-    TaskInfoDao repairInfoDao;
+    TaskInfoDao taskInfoDao;
     /**
      * 激活流程实例
      */
@@ -35,29 +34,26 @@ public class InstanceService extends BaseProcessService {
     private final int gq = 2;
     private final int dataSize = 2;
 
-    public ReturnVoT suspendOrActivateProcessInstanceById(List<String> processInstanceIds, int suspensionState) {
-        ReturnVoT returnVo = new ReturnVoT();
+    public int suspendOrActivateProcessInstanceById(List<String> processInstanceIds, int suspensionState) throws MyException {
         try {
             if (suspensionState == gq) {
                 for (String processInstanceId : processInstanceIds) {
                     runtimeService.suspendProcessInstanceById(processInstanceId);
                 }
-                returnVo.setBoo(true);
-                returnVo.setInfo("挂起成功！");
             } else if (suspensionState == jh) {
                 for (String processInstanceId : processInstanceIds) {
                     runtimeService.activateProcessInstanceById(processInstanceId);
                 }
-                returnVo.setBoo(true);
-                returnVo.setInfo("激活成功！");
+
             }
         } catch (Exception e) {
-            returnVo.setInfo("激活或者挂起流程实例失败！");
+            throw new MyException(CodeEnum.commonException);
         }
-        return returnVo;
+        return suspensionState;
     }
 
     public void deleteInstanceCompletely(List<String> processInstanceIds) throws MyException {
+        int i = 0;
         try {
             for (String processInstanceId : processInstanceIds) {
                 long count = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).count();
@@ -106,5 +102,4 @@ public class InstanceService extends BaseProcessService {
         return instances;
     }
 
-    
 }
