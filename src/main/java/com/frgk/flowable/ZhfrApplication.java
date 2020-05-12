@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication
 @EnableEurekaClient
 @EnableFeignClients
-@ServletComponentScan
+//@ServletComponentScan
 @MapperScan("com.frgk.flowable.dao")
 public class ZhfrApplication {
 

@@ -122,6 +122,6 @@ public class ApplicationService extends BaseProcessService {
             throw new MyException(CodeEnum.commonException);
         }
         String id = processInstance.getProcessInstanceId();
-        return processInstance.getProcessInstanceId();
+        return id;
     }
 }
