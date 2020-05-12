@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.frgk.flowable.dao.TaskInfoDao">
+    <!--查询流程记录信息-->
+    <select id="getCommentsByInstanceId" resultMap="CommentMap">
+select * from ACT_HI_COMMENT c left join ACT_ID_USER u on c.USER_ID_=u.ID_ where PROC_INST_ID_=#{id} order by c.TIME_;
+    </select>
+    <!--获取全部流程实例id-->
+    <select id="getAllProcessInstanceIds" resultType="String">
+    select PROC_INST_ID_ from ACT_HI_PROCINST;
+</select>
+    <resultMap id="getCommentsMap" type="Comments">
+
+        <collection property="comments" resultMap="CommentMap"></collection>
+
+    </resultMap>
+
+    <resultMap id="CommentMap" type="CommentVo">
+        <id column="PROC_INST_ID_"></id>
+        <result property="type" column="TYPE_"></result>
+        <result property="time" column="TIME_"></result>
+        <result property="userId" column="USER_ID_"></result>
+        <result property="userName" column="FIRST_"></result>
+        <result property="tel" column="TEL_"></result>
+        <result property="taskId" column="TASK_ID_"></result>
+        <result property="processInstanceId" column="PROC_INST_ID_"></result>
+        <result property="fullMsg" column="FULL_MSG_"></result>
+        <result property="message" column="MESSAGE_"></result>
+    </resultMap>
+    <!--查询流程记录信息-->
+    <select id="getCommentsByData" resultMap="CommentMap">
+        select * from ACT_HI_COMMENT c
+        left join ACT_ID_USER u on c.USER_ID_=u.ID_
+        join ACT_HI_PROCINST h on h.PROC_INST_ID_=c.PROC_INST_ID_
+        where c.PROC_INST_ID_ = #{id}
+        <if test="beginTime != null and beginTime != ''">AND h.START_TIME_ <![CDATA[>=]]> #{beginTime}</if>
+        <if test="endTime != null and endTime != ''">AND h.START_TIME_ <![CDATA[<=]]>#{endTime}</if>
+        order by c.TIME_;
+    </select>
+
+    <!--获取待办任务-->
+    <select id="getApplyingTasks"
+            resultType="TaskVo">
+        SELECT DISTINCT
+        t1.ID_ AS taskId,
+        t1.NAME_ AS taskName,
+        t2.NAME_ AS formName,
+        t2.TENANT_ID_ AS systemSn,
+        t2.BUSINESS_KEY_ AS businessKey,
+        t2.PROC_INST_ID_ AS processInstanceId,
+        t1.CREATE_TIME_ AS startTime,
+        t4.FIRST_ AS creator
+        FROM
+        ACT_RU_TASK t1
+        INNER JOIN ACT_RU_EXECUTION t2 ON t1.PROC_INST_ID_ = t2.PROC_INST_ID_
+        LEFT JOIN ACT_RU_IDENTITYLINK t3 ON t3.TASK_ID_ = t1.ID_
+        LEFT JOIN act_id_user t4 on t4.ID_=t2.START_USER_ID_
+        WHERE
+        t2.BUSINESS_KEY_ IS NOT NULL
+        AND (
+        t1.ASSIGNEE_ = #{userCode}
+        OR (
+        t1.ASSIGNEE_ IN (
+        SELECT
+        G.group_id_
+        FROM
+        ACT_ID_MEMBERSHIP G
+        WHERE
+        G.user_id_ = #{userCode}
+        )
+        )
+        OR (
+        (
+        t1.ASSIGNEE_ IS NULL
+        OR t1.ASSIGNEE_ = ''
+        )
+        AND (
+        t3.USER_ID_ = #{userCode}
+        OR t3.GROUP_ID_ IN (
+        SELECT
+        g.group_id_
+        FROM
+        ACT_ID_MEMBERSHIP g
+        WHERE
+        g.user_id_ = #{userCode}
+        )
+        )
+        )
+        )
+        order by t1.CREATE_TIME_ desc
+    </select>
+    <!--获取我的已办任务-->
+    <select id="getMyApplyedTasks" resultType="TaskVo">
+        SELECT DISTINCT
+        t1.ID_ AS taskId,
+        t1.NAME_ AS taskName,
+        t1.TENANT_ID_ AS systemSn,
+        t1.PROC_INST_ID_ AS processInstanceId,
+        t1.START_TIME_ AS startTime,
+        t1.END_TIME_ AS endTime,
+        t2.FIRST_ AS creator
+        FROM ACT_HI_TASKINST t1
+        LEFT JOIN act_hi_procinst t3 on t3.PROC_INST_ID_=t1.PROC_INST_ID_
+        LEFT JOIN act_id_user t2 on t2.ID_=t3.START_USER_ID_
+        where t1.ASSIGNEE_=#{userCode}
+    </select>
+
+    <!--获取退回节点-->
+    <select id="getBackNode" resultType="FlowNodeVo">
+       select DISTINCT
+            t.ACT_ID_ as nodeId,
+            t.ACT_NAME_ as nodeName,
+            t.ASSIGNEE_ as userCode,
+            t.ASSIGNEE_ as userCode,
+            u.FIRST_ as userName,
+            t.END_TIME_ as endTime
+
+        from ACT_RU_ACTINST t
+        LEFT JOIN ACT_ID_USER u on t.ASSIGNEE_=u.ID_
+        LEFT JOIN ACT_RU_TASK ru on ru.PROC_INST_ID_=#{id}
+         where t.ACT_TYPE_ = 'userTask'
+     and t.PROC_INST_ID_=#{id} and t.END_TIME_ is not null and t.DELETE_REASON_ is null and t.ACT_ID_ !=ru.TASK_DEF_KEY_;
+
+</select>
+
+</mapper>

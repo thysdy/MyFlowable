@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="RepairAppV9" name="RepairAppV9" isExecutable="true">
+    <startEvent id="start" name="开始" flowable:formFieldValidation="true"></startEvent>
+    <userTask id="ManagerExamine" name="区域经理审核" flowable:assignee="${assignee.id}" flowable:formFieldValidation="true">
+      <extensionElements>
+        <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
+      </extensionElements>
+    </userTask>
+    <userTask id="AdminExamine" name="管理员审核" flowable:candidateGroups="admins,backoffices" flowable:formFieldValidation="true"></userTask>
+    <userTask id="RepairPerson" name="维修人员维修" flowable:assignee="${assignee.id}" flowable:formFieldValidation="true">
+      <extensionElements>
+        <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
+      </extensionElements>
+    </userTask>
+    <userTask id="UserEvaluate" name="用户评价" flowable:assignee="${user.id}" flowable:formFieldValidation="true">
+      <extensionElements>
+        <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
+      </extensionElements>
+    </userTask>
+    <endEvent id="end" name="结束"></endEvent>
+    <sequenceFlow id="sid-0F603DA8-FF4D-4ACC-A980-22AA52B3F0C9" sourceRef="start" targetRef="AdminExamine"></sequenceFlow>
+    <sequenceFlow id="sid-0CA2AEBC-DAA5-41C1-A4E1-CAA518DF6FC3" name="派发" sourceRef="AdminExamine" targetRef="ManagerExamine"></sequenceFlow>
+    <sequenceFlow id="sid-27855823-1F3F-49F5-B0ED-0F33DE790960" name="转发" sourceRef="ManagerExamine" targetRef="RepairPerson"></sequenceFlow>
+    <sequenceFlow id="sid-8A8731A8-8475-4A30-B51C-22D75859EE58" name="转发" sourceRef="RepairPerson" targetRef="UserEvaluate"></sequenceFlow>
+    <sequenceFlow id="sid-C5C52331-ACD4-4B52-95DB-6E98538703BE" sourceRef="UserEvaluate" targetRef="end"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_RepairAppV10">
+    <bpmndi:BPMNPlane bpmnElement="RepairAppV9" id="BPMNPlane_RepairAppV10">
+      <bpmndi:BPMNShape bpmnElement="start" id="BPMNShape_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="45.0" y="25.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ManagerExamine" id="BPMNShape_ManagerExamine">
+        <omgdc:Bounds height="80.0" width="100.0" x="268.0" y="0.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="AdminExamine" id="BPMNShape_AdminExamine">
+        <omgdc:Bounds height="80.0" width="100.0" x="113.0" y="0.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="RepairPerson" id="BPMNShape_RepairPerson">
+        <omgdc:Bounds height="80.0" width="100.0" x="433.0" y="0.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="UserEvaluate" id="BPMNShape_UserEvaluate">
+        <omgdc:Bounds height="80.0" width="100.0" x="593.0" y="0.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="end" id="BPMNShape_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="735.0" y="26.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-27855823-1F3F-49F5-B0ED-0F33DE790960" id="BPMNEdge_sid-27855823-1F3F-49F5-B0ED-0F33DE790960">
+        <omgdi:waypoint x="367.9499999999743" y="40.0"></omgdi:waypoint>
+        <omgdi:waypoint x="433.0" y="40.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-8A8731A8-8475-4A30-B51C-22D75859EE58" id="BPMNEdge_sid-8A8731A8-8475-4A30-B51C-22D75859EE58">
+        <omgdi:waypoint x="532.9499999999925" y="40.0"></omgdi:waypoint>
+        <omgdi:waypoint x="593.0" y="40.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-0F603DA8-FF4D-4ACC-A980-22AA52B3F0C9" id="BPMNEdge_sid-0F603DA8-FF4D-4ACC-A980-22AA52B3F0C9">
+        <omgdi:waypoint x="74.94999827784315" y="40.0"></omgdi:waypoint>
+        <omgdi:waypoint x="112.99999999999244" y="40.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-0CA2AEBC-DAA5-41C1-A4E1-CAA518DF6FC3" id="BPMNEdge_sid-0CA2AEBC-DAA5-41C1-A4E1-CAA518DF6FC3">
+        <omgdi:waypoint x="212.9499999999902" y="40.0"></omgdi:waypoint>
+        <omgdi:waypoint x="267.99999999999824" y="40.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C5C52331-ACD4-4B52-95DB-6E98538703BE" id="BPMNEdge_sid-C5C52331-ACD4-4B52-95DB-6E98538703BE">
+        <omgdi:waypoint x="692.9499999999907" y="40.0"></omgdi:waypoint>
+        <omgdi:waypoint x="735.0" y="40.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

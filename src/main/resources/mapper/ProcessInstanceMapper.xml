@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.frgk.flowable.dao.ProcessInstanceDao">
+    <!--查询流程实例-->
+    <select id="getFlowableInstances" parameterType="ProcessInstanceQueryVo"
+            resultType="ProcessInstanceVo">
+        SELECT DISTINCT
+        t1.ID_ AS processInstanceId,
+        t1.PROC_DEF_ID_ as processDefinitionId,
+        t1.NAME_ AS formName,
+--         t1.TENANT_ID_ AS systemSn,
+        t1.BUSINESS_KEY_ AS businessKey,
+        t1.START_TIME_ AS startTime,
+        t1.END_TIME_ AS endTime,
+        t2.ID_ AS starterId,
+        t2.FIRST_ as starter,
+        t3.SUSPENSION_STATE_ as suspensionState
+        FROM
+        ACT_HI_PROCINST t1
+        LEFT JOIN ACT_ID_USER t2 ON t1.START_USER_ID_ = t2.ID_
+        LEFT JOIN ACT_RU_EXECUTION t3 ON t1.ID_=t3.PROC_INST_ID_
+        <where>
+            <if test="userCode != null and userCode!= ''">and t1.START_USER_ID_ = #{userCode}</if>
+            <if test="suspensionState != null and suspensionState!= ''">and t3.SUSPENSION_STATE_= #{suspensionState} </if>
+            <if test="beginTime != null and beginTime != ''">AND t1.START_TIME_ <![CDATA[>=]]> #{beginTime}</if>
+            <if test="endTime != null and endTime != ''">AND t1.START_TIME_ <![CDATA[<=]]>#{endTime}</if>
+            <if test="lastCreateTime != null and lastCreateTime != ''">AND t1.START_TIME_ <![CDATA[<]]>
+                #{lastCreateTime}
+            </if>
+        </where>
+        order by t1.START_TIME_ desc
+    </select>
+    <select id="getAllInstanceIds" resultType="String">
+        select t.PROC_INST_ID_ from act_hi_procinst t;
+    </select>
+</mapper>
