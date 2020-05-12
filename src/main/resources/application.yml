@@ -49,13 +49,5 @@ spring:
 mybatis-plus:
   mapper-locations: classpath*:mapper/*.xml
   type-aliases-package: com.frgk.flowable.entity
-#feign:
-#  client:
-#    config:
-#      default:
-#        connectTimeout: 8000
-#        readTimeout: 10000
-#  configuration:
-#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 
