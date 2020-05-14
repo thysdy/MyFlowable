@@ -15,7 +15,7 @@ public class TaskVo implements Serializable {
      */
     private String taskId;
     /**
-     * 任务id
+     * 创建者
      */
     private String creator;
     /**
@@ -34,16 +34,31 @@ public class TaskVo implements Serializable {
      * 流程实例id
      */
     private String processInstanceId;
+    /**
+     * 流程定义id
+     */
+    private String processDefinitionId;
+
 
     /**
-     * 开始时间
+     *流程开始时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date instanceStartTime;
+    /**
+     *流程结束时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date instanceEndTime;
+    /**
+     * 任务开始时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date startTime;
     /**
      * 结束时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date endTime;
     /**
      * 系统标识

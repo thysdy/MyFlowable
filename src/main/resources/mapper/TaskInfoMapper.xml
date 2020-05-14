@@ -44,12 +44,16 @@ select * from ACT_HI_COMMENT c left join ACT_ID_USER u on c.USER_ID_=u.ID_ where
         t2.BUSINESS_KEY_ AS businessKey,
         t2.PROC_INST_ID_ AS processInstanceId,
         t1.CREATE_TIME_ AS startTime,
-        t4.FIRST_ AS creator
+        t4.FIRST_ AS creator,
+        t5.START_TIME_ AS instanceStartTime,
+        t5.END_TIME_ AS instanceEndTime,
+        t1.PROC_DEF_ID_ AS processDefinitionId
         FROM
         ACT_RU_TASK t1
         INNER JOIN ACT_RU_EXECUTION t2 ON t1.PROC_INST_ID_ = t2.PROC_INST_ID_
         LEFT JOIN ACT_RU_IDENTITYLINK t3 ON t3.TASK_ID_ = t1.ID_
         LEFT JOIN act_id_user t4 on t4.ID_=t2.START_USER_ID_
+        INNER JOIN act_hi_procinst t5 on t5.PROC_INST_ID_=t1.PROC_INST_ID_
         WHERE
         t2.BUSINESS_KEY_ IS NOT NULL
         AND (
@@ -93,7 +97,10 @@ select * from ACT_HI_COMMENT c left join ACT_ID_USER u on c.USER_ID_=u.ID_ where
         t1.PROC_INST_ID_ AS processInstanceId,
         t1.START_TIME_ AS startTime,
         t1.END_TIME_ AS endTime,
-        t2.FIRST_ AS creator
+        t2.FIRST_ AS creator,
+        t1.START_TIME_ AS instanceStartTime,
+        t1.END_TIME_ AS instanceEndTime,
+        t1.PROC_DEF_ID_ AS processDefinitionId
         FROM ACT_HI_TASKINST t1
         LEFT JOIN act_hi_procinst t3 on t3.PROC_INST_ID_=t1.PROC_INST_ID_
         LEFT JOIN act_id_user t2 on t2.ID_=t3.START_USER_ID_
@@ -109,7 +116,6 @@ select * from ACT_HI_COMMENT c left join ACT_ID_USER u on c.USER_ID_=u.ID_ where
             t.ASSIGNEE_ as userCode,
             u.FIRST_ as userName,
             t.END_TIME_ as endTime
-
         from ACT_RU_ACTINST t
         LEFT JOIN ACT_ID_USER u on t.ASSIGNEE_=u.ID_
         LEFT JOIN ACT_RU_TASK ru on ru.PROC_INST_ID_=#{id}
@@ -117,5 +123,35 @@ select * from ACT_HI_COMMENT c left join ACT_ID_USER u on c.USER_ID_=u.ID_ where
      and t.PROC_INST_ID_=#{id} and t.END_TIME_ is not null and t.DELETE_REASON_ is null and t.ACT_ID_ !=ru.TASK_DEF_KEY_;
 
 </select>
+
+    <select id="getCommentsByTaskId" resultMap="CommentMap">
+select * from ACT_HI_COMMENT c left join ACT_ID_USER u on c.USER_ID_=u.ID_ where TASK_ID_=#{id} and ACTION_ ='AddComment'  order by c.TIME_;
+    </select>
+
+    <resultMap id="getInstanceProgressInfoMap" type="ProgressActVo">
+        <result column="FIRST_" property="assign"></result>
+        <result column="ACT_NAME_" property="actName"></result>
+        <result column="PROC_INST_ID_" property="instanceId"></result>
+        <result column="START_TIME_" property="startTime"></result>
+        <result column="END_TIME_" property="endTime"></result>
+        <result column="TASK_ID_" property="taskId"></result>
+        <result column="ACT_TYPE_" property="actType"></result>
+        <collection property="comments" column="TASK_ID_" select="getCommentsByTaskId"></collection>
+    </resultMap>
+    <select id="getInstanceProgressInfo" parameterType="RequestVo" resultMap="getInstanceProgressInfoMap">
+      SELECT DISTINCT
+        t2.FIRST_ ,
+        t1.ACT_NAME_ ,
+        t1.PROC_INST_ID_ ,
+        t1.START_TIME_ ,
+        t1.END_TIME_,
+        t1.TASK_ID_,
+        t1.ACT_TYPE_
+        FROM act_hi_actinst t1
+        LEFT JOIN act_hi_procinst t3 on t3.PROC_INST_ID_=t1.PROC_INST_ID_
+        LEFT JOIN act_id_user t2 on t2.ID_=t1.ASSIGNEE_
+        where t1.PROC_INST_ID_=#{instanceId} and (t1.ACT_TYPE_='startEvent' or t1.ACT_TYPE_= 'userTask' or t1.ACT_TYPE_= 'endEvent' )
+        order by t1.START_TIME_
+    </select>
 
 </mapper>

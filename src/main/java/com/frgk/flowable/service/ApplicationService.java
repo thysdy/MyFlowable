@@ -10,7 +10,8 @@ import com.frgk.flowable.flowable.FlowableBpmnModelServiceImpl;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.flowable.bpmn.constants.BpmnXMLConstants;
-import org.flowable.bpmn.model.BpmnModel;
+import org.flowable.bpmn.model.*;
+import org.flowable.bpmn.model.Process;
 import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.runtime.ProcessInstance;
@@ -108,7 +109,7 @@ public class ApplicationService extends BaseProcessService {
             //设置创建者id
             identityService.setAuthenticatedUserId(param.getCreator());
             Map<String, Object> variables = param.getVariables();
-            variables.put("state", 1);
+            variables.put("state", "开始");
             processInstance = runtimeService.createProcessInstanceBuilder()
                     .businessKey(id)
                     .variables(variables)
@@ -123,5 +124,40 @@ public class ApplicationService extends BaseProcessService {
         }
         String id = processInstance.getProcessInstanceId();
         return id;
+    }
+
+    public List<ProgressActVo> getInstanceProgressInfo(RequestVo requestVo) throws MyException {
+        List<ProgressActVo> list = new ArrayList<>();
+        try {
+            list = taskInfoDao.getInstanceProgressInfo(requestVo.getInstanceId());
+            list.get(list.size()-1).setIsNowTask(true);
+            BpmnModel bpmnModel = repositoryService.getBpmnModel(requestVo.getProcessDefinitionId());
+            Process process = bpmnModel.getProcesses().get(0);
+            Collection<UserTask> flowElements1 = process.findFlowElementsOfType(UserTask.class);
+            for (UserTask userTask : flowElements1) {
+                int i = 1;
+                for (ProgressActVo act : list) {
+                    if (act.getActName().equals(userTask.getName())) {
+                        i = 0;
+                        break;
+                    }
+                }
+                if (i == 1) {
+                    ProgressActVo progressActVo = new ProgressActVo();
+                    progressActVo.setActName(userTask.getName());
+                    list.add(progressActVo);
+                }
+            }
+            if ("endEvent" != list.get(list.size() - 1).getActType()) {
+                ProgressActVo progressActVo = new ProgressActVo();
+                progressActVo.setActName("结束");
+                list.add(progressActVo);
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MyException(CodeEnum.commonException);
+        }
+        return list;
     }
 }

@@ -54,10 +54,9 @@ public class TaskService extends BaseProcessService {
                     String name = historicVariableInstance.getVariableName();
                     Object object = historicVariableInstance.getValue();
                     variables.put(name, object);
-                }
-                int state = (int) variables.get("state");
-                if (null != task.getEndTime() && 2 != state) {
-                    variables.put("state", 3);
+                    if(null!=task.getInstanceEndTime()){
+                        variables.put("state", "结束");
+                    }
                 }
                 task.setVariables(variables);
             }
@@ -80,12 +79,7 @@ public class TaskService extends BaseProcessService {
             String message = request.getMessage();
             String userId = request.getUserCode();
             Map<String, Object> variables = request.getVariables();
-            if (null != variables.get("agree")) {
-                Boolean agree = (Boolean) variables.get("agree");
-                if (!agree) {
-                    variables.put("state", 2);
-                }
-            }
+            variables.put("state", "进行中");
             for (String id : request.getIds()) {
                 Task task = taskService.createTaskQuery().taskId(id).singleResult();
                 String instanceId = task.getProcessInstanceId();
@@ -115,14 +109,16 @@ public class TaskService extends BaseProcessService {
         request.setTargetKey(t[0]);
         request.setTargetName(t[1]);
         try {
-            Task task1 = taskService.createTaskQuery().taskId(request.getTaskId()).singleResult();
-            String instanceId = task1.getProcessInstanceId();
+            Task myTask = taskService.createTaskQuery().taskId(request.getTaskId()).singleResult();
+            String instanceId = myTask.getProcessInstanceId();
             String message = "申请退回到" + request.getTargetName() + ",退回原因：" + request.getBackReason();
             List<String> key = new ArrayList<>();
-            key.add(task1.getTaskDefinitionKey());
-
+            key.add(myTask.getTaskDefinitionKey());
+            Map<String, Object> processVariables = myTask.getProcessVariables();
+            processVariables.put("state","退回");
             runtimeService.createChangeActivityStateBuilder()
-                    .processInstanceId(task1.getProcessInstanceId())
+                    .processInstanceId(myTask.getProcessInstanceId())
+                    .processVariables(processVariables)
                     .moveActivityIdsToSingleActivityId(key, request.getTargetKey())
                     .changeState();
             this.addComment(request.getTaskId(), request.getUserCode(), instanceId,

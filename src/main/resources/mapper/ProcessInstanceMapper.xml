@@ -8,7 +8,7 @@
         t1.ID_ AS processInstanceId,
         t1.PROC_DEF_ID_ as processDefinitionId,
         t1.NAME_ AS formName,
---         t1.TENANT_ID_ AS systemSn,
+        -- t1.TENANT_ID_ AS systemSn,
         t1.BUSINESS_KEY_ AS businessKey,
         t1.START_TIME_ AS startTime,
         t1.END_TIME_ AS endTime,
@@ -21,7 +21,8 @@
         LEFT JOIN ACT_RU_EXECUTION t3 ON t1.ID_=t3.PROC_INST_ID_
         <where>
             <if test="userCode != null and userCode!= ''">and t1.START_USER_ID_ = #{userCode}</if>
-            <if test="suspensionState != null and suspensionState!= ''">and t3.SUSPENSION_STATE_= #{suspensionState} </if>
+            <if test="suspensionState== 1">t3.SUSPENSION_STATE_ !=2 </if>
+            <if test="suspensionState== 2">and t3.SUSPENSION_STATE_ =2</if>
             <if test="beginTime != null and beginTime != ''">AND t1.START_TIME_ <![CDATA[>=]]> #{beginTime}</if>
             <if test="endTime != null and endTime != ''">AND t1.START_TIME_ <![CDATA[<=]]>#{endTime}</if>
             <if test="lastCreateTime != null and lastCreateTime != ''">AND t1.START_TIME_ <![CDATA[<]]>

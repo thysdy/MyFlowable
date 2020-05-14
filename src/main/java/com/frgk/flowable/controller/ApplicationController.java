@@ -70,4 +70,21 @@ public class ApplicationController {
         }
     }
 
+    /**
+     * 获取流程进度信息
+     *
+     * @param requestVo
+     * @return
+     */
+    @PostMapping("/getInstanceProgressInfo")
+    public ReturnVo getInstanceProgressInfo(@RequestBody RequestVo requestVo) {
+
+        try {
+            List<ProgressActVo> list=applicationService.getInstanceProgressInfo(requestVo);
+            return ReturnVo.success(list);
+        } catch (MyException e) {
+            return ReturnVo.exception(e);
+        }
+    }
+
 }

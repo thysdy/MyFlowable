@@ -33,4 +33,5 @@ public interface TaskInfoDao {
      */
     public List<FlowNodeVo> getBackNode(String id);
 
+    List<ProgressActVo> getInstanceProgressInfo(String instanceId);
 }
