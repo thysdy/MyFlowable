@@ -57,7 +57,7 @@ select * from ACT_HI_COMMENT c left join ACT_ID_USER u on c.USER_ID_=u.ID_ where
         WHERE
         t2.BUSINESS_KEY_ IS NOT NULL
         AND (
-        t1.ASSIGNEE_ = #{userCode}
+        t1.ASSIGNEE_ = #{query.userCode}
         OR (
         t1.ASSIGNEE_ IN (
         SELECT
@@ -65,7 +65,7 @@ select * from ACT_HI_COMMENT c left join ACT_ID_USER u on c.USER_ID_=u.ID_ where
         FROM
         ACT_ID_MEMBERSHIP G
         WHERE
-        G.user_id_ = #{userCode}
+        G.user_id_ = #{query.userCode}
         )
         )
         OR (
@@ -74,14 +74,14 @@ select * from ACT_HI_COMMENT c left join ACT_ID_USER u on c.USER_ID_=u.ID_ where
         OR t1.ASSIGNEE_ = ''
         )
         AND (
-        t3.USER_ID_ = #{userCode}
+        t3.USER_ID_ = #{query.userCode}
         OR t3.GROUP_ID_ IN (
         SELECT
         g.group_id_
         FROM
         ACT_ID_MEMBERSHIP g
         WHERE
-        g.user_id_ = #{userCode}
+        g.user_id_ = #{query.userCode}
         )
         )
         )
@@ -104,7 +104,7 @@ select * from ACT_HI_COMMENT c left join ACT_ID_USER u on c.USER_ID_=u.ID_ where
         FROM ACT_HI_TASKINST t1
         LEFT JOIN act_hi_procinst t3 on t3.PROC_INST_ID_=t1.PROC_INST_ID_
         LEFT JOIN act_id_user t2 on t2.ID_=t3.START_USER_ID_
-        where t1.ASSIGNEE_=#{userCode}
+        where t1.ASSIGNEE_=#{query.userCode}
     </select>
 
     <!--获取退回节点-->

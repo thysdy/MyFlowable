@@ -1,5 +1,7 @@
 package com.frgk.flowable.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.frgk.flowable.common.CodeEnum;
 import com.frgk.flowable.common.MyException;
 import com.frgk.flowable.dao.TaskInfoDao;
@@ -23,7 +25,9 @@ public class TaskService extends BaseProcessService {
     public List<TaskVo> getMyTasks(ProcessInstanceQueryVo processQueryVo) throws MyException {
         List<TaskVo> tasks = new ArrayList<>();
         try {
-            tasks = taskInfoDao.getApplyingTasks(processQueryVo);
+            Page<TaskVo> page = new Page<>(processQueryVo.getNowPage(), processQueryVo.getPageSize());
+            IPage<TaskVo> taskPage = taskInfoDao.getApplyingTasks(page, processQueryVo);
+            tasks = taskPage.getRecords();
             for (TaskVo task : tasks) {
                 Map<String, Object> processVariables = runtimeService.getVariables(task.getProcessInstanceId());
                 task.setVariables(processVariables);
@@ -44,7 +48,9 @@ public class TaskService extends BaseProcessService {
     public List<TaskVo> getMyApplyedTasks(ProcessInstanceQueryVo processQueryVo) throws MyException {
         List<TaskVo> tasks = new ArrayList<>();
         try {
-            tasks = taskInfoDao.getMyApplyedTasks(processQueryVo);
+            Page<TaskVo> page = new Page<>(processQueryVo.getNowPage(), processQueryVo.getPageSize());
+            IPage<TaskVo> taskPage = taskInfoDao.getMyApplyedTasks(page, processQueryVo);
+            tasks = taskPage.getRecords();
             for (TaskVo task : tasks) {
                 String instanceId = task.getProcessInstanceId();
                 List<HistoricVariableInstance> list = historyService.createHistoricVariableInstanceQuery().processInstanceId(instanceId).list();
@@ -54,7 +60,7 @@ public class TaskService extends BaseProcessService {
                     String name = historicVariableInstance.getVariableName();
                     Object object = historicVariableInstance.getValue();
                     variables.put(name, object);
-                    if(null!=task.getInstanceEndTime()){
+                    if (null != task.getInstanceEndTime()) {
                         variables.put("state", "结束");
                     }
                 }
@@ -116,7 +122,7 @@ public class TaskService extends BaseProcessService {
             List<String> key = new ArrayList<>();
             key.add(myTask.getTaskDefinitionKey());
             Map<String, Object> processVariables = myTask.getProcessVariables();
-            processVariables.put("state","退回");
+            processVariables.put("state", "退回");
             runtimeService.createChangeActivityStateBuilder()
                     .processInstanceId(myTask.getProcessInstanceId())
                     .processVariables(processVariables)

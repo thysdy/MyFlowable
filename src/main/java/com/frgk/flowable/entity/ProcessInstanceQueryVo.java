@@ -21,6 +21,7 @@ public class ProcessInstanceQueryVo implements Serializable {
     private String repairState;
     private String beginTime;
     private String endTime;
+    private int nowPage;
     private int pageSize;
     private String lastCreateTime;
 }

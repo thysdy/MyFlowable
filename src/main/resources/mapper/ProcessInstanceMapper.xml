@@ -20,13 +20,13 @@
         LEFT JOIN ACT_ID_USER t2 ON t1.START_USER_ID_ = t2.ID_
         LEFT JOIN ACT_RU_EXECUTION t3 ON t1.ID_=t3.PROC_INST_ID_
         <where>
-            <if test="userCode != null and userCode!= ''">and t1.START_USER_ID_ = #{userCode}</if>
-            <if test="suspensionState== 1">t3.SUSPENSION_STATE_ !=2 </if>
-            <if test="suspensionState== 2">and t3.SUSPENSION_STATE_ =2</if>
-            <if test="beginTime != null and beginTime != ''">AND t1.START_TIME_ <![CDATA[>=]]> #{beginTime}</if>
-            <if test="endTime != null and endTime != ''">AND t1.START_TIME_ <![CDATA[<=]]>#{endTime}</if>
-            <if test="lastCreateTime != null and lastCreateTime != ''">AND t1.START_TIME_ <![CDATA[<]]>
-                #{lastCreateTime}
+            <if test="query.userCode != null and query.userCode!= ''">and t1.START_USER_ID_ = #{query.userCode}</if>
+            <if test="query.suspensionState== 1">t3.SUSPENSION_STATE_ !=2 </if>
+            <if test="query.suspensionState== 2">and t3.SUSPENSION_STATE_ =2</if>
+            <if test="query.beginTime != null and query.beginTime != ''">AND t1.START_TIME_ <![CDATA[>=]]> #{query.beginTime}</if>
+            <if test="query.endTime != null and query.endTime != ''">AND t1.START_TIME_ <![CDATA[<=]]>#{query.endTime}</if>
+            <if test="query.lastCreateTime != null and query.lastCreateTime != ''">AND t1.START_TIME_ <![CDATA[<]]>
+                #{query.lastCreateTime}
             </if>
         </where>
         order by t1.START_TIME_ desc

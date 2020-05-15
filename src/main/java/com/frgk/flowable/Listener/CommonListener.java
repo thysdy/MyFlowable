@@ -48,9 +48,10 @@ public class CommonListener extends BaseProcessService implements TaskListener, 
         }
         try {
             params = (String) paramString.getValue(delegateTask);
-            param = (Map<String, Object>) JSONUtils.parse(params);
+            if (null != params) {
+                param = (Map<String, Object>) JSONUtils.parse(params);
+            }
         } catch (Exception e) {
-            throw new MyException(CodeEnum.commonException);
         }
         try {
             //获取流程变量
@@ -71,12 +72,15 @@ public class CommonListener extends BaseProcessService implements TaskListener, 
             param.put("user", userName);
             param.put("businessKey", businessKey);
             param.put("variables", variables);
+
+            ServiceRequestVo serviceRequestVo = new ServiceRequestVo(initiator, userName, processInstanceId, userName, businessKey, variables);
+
             if (null != serviceUrl) {
-                String result = HttpUtil4.doPost(serviceUrl, param);
-                System.out.println(result);
+                RestTemplate restTemplate = new RestTemplate();
+                new RequestVo();
+                ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity(serviceUrl, serviceRequestVo, String.class);
             }
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

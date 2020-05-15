@@ -1,5 +1,7 @@
 package com.frgk.flowable.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.frgk.flowable.common.CodeEnum;
 import com.frgk.flowable.common.MyException;
 import com.frgk.flowable.dao.ProcessInstanceDao;
@@ -78,7 +80,9 @@ public class InstanceService extends BaseProcessService {
                 queryVo.setBeginTime(dates.get(0));
                 queryVo.setEndTime(dates.get(1));
             }
-            instances = processInstanceDao.getFlowableInstances(queryVo);
+            Page<ProcessInstanceVo> page = new Page<>(queryVo.getNowPage(), queryVo.getPageSize());
+            IPage<ProcessInstanceVo> instancePage = processInstanceDao.getFlowableInstances(page, queryVo);
+            instances = instancePage.getRecords();
 
             for (ProcessInstanceVo instanceVo : instances) {
                 List<HistoricVariableInstance> list = historyService.createHistoricVariableInstanceQuery().processInstanceId(instanceVo.getProcessInstanceId()).list();
@@ -89,7 +93,7 @@ public class InstanceService extends BaseProcessService {
                     Object object = historicVariableInstance.getValue();
                     variables.put(name, object);
                 }
-                String state= (String) variables.get("state");
+                String state = (String) variables.get("state");
                 if (null != instanceVo.getEndTime()) {
                     variables.put("state", "结束");
                 }
