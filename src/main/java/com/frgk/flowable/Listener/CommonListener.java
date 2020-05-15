@@ -10,27 +10,21 @@ import com.frgk.flowable.entity.RequestVo;
 import com.frgk.flowable.entity.ServiceRequestVo;
 import com.frgk.flowable.entity.User;
 import com.frgk.flowable.flowable.BaseProcessService;
-import io.micrometer.core.instrument.util.JsonUtils;
 import lombok.SneakyThrows;
 import org.aspectj.apache.bcel.classfile.Code;
 import org.flowable.common.engine.impl.el.FixedValue;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.ExecutionListener;
-import org.flowable.engine.delegate.JavaDelegate;
 import org.flowable.engine.delegate.TaskListener;
 import org.flowable.engine.history.HistoricProcessInstance;
-import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.service.delegate.DelegateTask;
-import org.flowable.variable.api.history.HistoricVariableInstance;
-import org.omg.PortableInterceptor.INACTIVE;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.beans.Expression;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Component(value = "commonListener")
@@ -129,8 +123,7 @@ public class CommonListener extends BaseProcessService implements TaskListener, 
             if (null != serviceUrl) {
                 RestTemplate restTemplate = new RestTemplate();
                 new RequestVo();
-                ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity("http://localhost:8214/adverisement/sendMessage", serviceRequestVo, String.class);
-                String body = stringResponseEntity.getBody();
+                ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity(serviceUrl, serviceRequestVo, String.class);
             }
         } catch (Exception e) {
         }
