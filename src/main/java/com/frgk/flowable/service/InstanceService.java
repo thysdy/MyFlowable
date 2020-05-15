@@ -89,9 +89,9 @@ public class InstanceService extends BaseProcessService {
                     Object object = historicVariableInstance.getValue();
                     variables.put(name, object);
                 }
-                int state = (int) variables.get("state");
-                if (null != instanceVo.getEndTime() && 2 != state) {
-                    variables.put("state", 3);
+                String state= (String) variables.get("state");
+                if (null != instanceVo.getEndTime()) {
+                    variables.put("state", "结束");
                 }
                 instanceVo.setVariables(variables);
             }

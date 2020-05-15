@@ -1,13 +1,11 @@
 package com.frgk.flowable.common;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
+import com.alibaba.druid.support.json.JSONUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -16,10 +14,12 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.flowable.variable.api.history.HistoricVariableInstance;
 
 /**
  * @program: springboot
@@ -93,22 +93,49 @@ public class HttpUtil4 {
         // 为httpPost实例设置配置
         httpPost.setConfig(requestConfig);
         // 设置请求头
-        httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
+        httpPost.addHeader("Content-Type", "application/json");
         // 封装post请求参数
         if (null != paramMap && paramMap.size() > 0) {
             List<NameValuePair> nvps = new ArrayList<>();
+            List<Map> nvpls = new ArrayList<>();
             // 通过map集成entrySet方法获取entity
             Set<Entry<String, Object>> entrySet = paramMap.entrySet();
             // 循环遍历，获取迭代器
             Iterator<Entry<String, Object>> iterator = entrySet.iterator();
+            Map m = null;
             while (iterator.hasNext()) {
+
                 Entry<String, Object> mapEntry = iterator.next();
+//                if (mapEntry.getValue().getClass().equals(HashMap.class)) {
+//
+//                   Map<String,Object> map= (Map<String, Object>) ((HashMap) mapEntry.getValue()).clone();
+//
+//
+//                    String variableString = "{";
+//                    for (String key : map.keySet()) {
+//                        Object value =  map.get(key);
+//                        if(value.getClass().equals(String.class)) {
+//                            variableString += "\"" + key + "\"" + ":" + "\"" + value + "\"" + ",";
+//                        }
+//                        else {
+//                            variableString += "\"" + key + "\"" + ":" +  value +",";
+//                        }
+//                        }
+//                    String substring = variableString.substring(0, variableString.length() - 1);
+//                    substring+="}";
+//                    nvps.add(new BasicNameValuePair(mapEntry.getKey(), substring));
+//                }
                 nvps.add(new BasicNameValuePair(mapEntry.getKey(), mapEntry.getValue().toString()));
+                m =  new HashMap();
+                m.put(mapEntry.getKey(),Objects.isNull(mapEntry.getValue()) ? "" : mapEntry.getValue().toString());
+                nvpls.add(m);
             }
 
             // 为httpPost设置封装好的请求参数
             try {
-                httpPost.setEntity(new UrlEncodedFormEntity(nvps, "UTF-8"));
+                //httpPost.setEntity(new UrlEncodedFormEntity(nvps, "UTF-8"));
+                StringEntity entityParams = new StringEntity(JSONUtils.toJSONString(m));
+                httpPost.setEntity(entityParams);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }

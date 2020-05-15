@@ -93,6 +93,7 @@ public class TaskService extends BaseProcessService {
                         null, message);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             throw new MyException(CodeEnum.commonException);
         }
     }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.frgk.flowable.dao.UserDao">
+    <!--通过用户id获取用户-->
+    <select id="findUserById" resultType="User">
+    select
+    ID_ as id,
+    FIRST_ as firstName,
+    LAST_ as lastName,
+    EMAIL_ as email
+    from ACT_ID_USER where ID_=#{id}
+</select>
+    <!--获取所有用户-->
+    <select id="getAllUsers" resultType="User">
+        select  t1.ID_ as id,
+    t1.FIRST_ as firstName,
+    t2.GROUP_ID_ as groupId
+ from ACT_ID_USER t1
+ LEFT JOIN ACT_ID_MEMBERSHIP t2 on t2.USER_ID_ =t1.ID_
+    </select>
+</mapper>
