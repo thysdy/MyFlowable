@@ -148,7 +148,7 @@ public class ApplicationService extends BaseProcessService {
                     list.add(progressActVo);
                 }
             }
-            if ("endEvent" != list.get(list.size() - 1).getActType()) {
+            if (!"endEvent" .equals(list.get(list.size() - 1).getActType())) {
                 ProgressActVo progressActVo = new ProgressActVo();
                 progressActVo.setActName("结束");
                 list.add(progressActVo);
