@@ -3,14 +3,11 @@ package com.frgk.flowable.controller;
 import com.frgk.flowable.common.MyException;
 import com.frgk.flowable.entity.*;
 import com.frgk.flowable.service.InstanceService;
-import org.flowable.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 public class InstanceController {
@@ -58,8 +55,8 @@ public class InstanceController {
     @PostMapping("/getFlowableInstances")
     public ReturnVo getFlowableInstances(@RequestBody ProcessInstanceQueryVo queryVo) {
         try {
-            List<ProcessInstanceVo> list = repairInstanceService.getFlowableInstances(queryVo);
-            return ReturnVo.success(list);
+            PageEntity pageEntity = repairInstanceService.getFlowableInstances(queryVo);
+            return ReturnVo.success(pageEntity);
         } catch (MyException e) {
             return ReturnVo.exception(e);
         }

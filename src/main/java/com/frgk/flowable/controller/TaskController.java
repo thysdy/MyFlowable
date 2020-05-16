@@ -24,7 +24,7 @@ public class TaskController {
     @PostMapping("/getMyTasks")
     public ReturnVo getMyTasks(@RequestBody ProcessInstanceQueryVo processQueryVo) {
         try {
-            List<TaskVo> tasks = taskService.getMyTasks(processQueryVo);
+           PageEntity tasks = taskService.getMyTasks(processQueryVo);
             return ReturnVo.success(tasks);
         } catch (MyException e) {
             return ReturnVo.exception(e);
@@ -41,7 +41,7 @@ public class TaskController {
     @PostMapping("/getMyApplyedTasks")
     public ReturnVo getMyApplyedTasks(@RequestBody ProcessInstanceQueryVo processQueryVo) {
         try {
-            List<TaskVo> tasks = taskService.getMyApplyedTasks(processQueryVo);
+            PageEntity tasks = taskService.getMyApplyedTasks(processQueryVo);
             return ReturnVo.success(tasks);
         } catch (MyException e) {
             return ReturnVo.exception(e);

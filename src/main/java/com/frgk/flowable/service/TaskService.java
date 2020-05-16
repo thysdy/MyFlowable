@@ -22,8 +22,9 @@ public class TaskService extends BaseProcessService {
     @Autowired
     TaskInfoDao taskInfoDao;
 
-    public List<TaskVo> getMyTasks(ProcessInstanceQueryVo processQueryVo) throws MyException {
+    public PageEntity getMyTasks(ProcessInstanceQueryVo processQueryVo) throws MyException {
         List<TaskVo> tasks = new ArrayList<>();
+        PageEntity pageEntity = null;
         try {
             Page<TaskVo> page = new Page<>(processQueryVo.getNowPage(), processQueryVo.getPageSize());
             IPage<TaskVo> taskPage = taskInfoDao.getApplyingTasks(page, processQueryVo);
@@ -32,11 +33,12 @@ public class TaskService extends BaseProcessService {
                 Map<String, Object> processVariables = runtimeService.getVariables(task.getProcessInstanceId());
                 task.setVariables(processVariables);
             }
+            pageEntity=new PageEntity(taskPage.getTotal(),taskPage.getPages(),taskPage.getSize(),taskPage.getCurrent(),tasks);
         } catch (Exception e) {
             e.printStackTrace();
             throw new MyException(CodeEnum.commonException);
         }
-        return tasks;
+        return pageEntity;
     }
 
     /**
@@ -45,8 +47,9 @@ public class TaskService extends BaseProcessService {
      * @param processQueryVo
      * @return
      */
-    public List<TaskVo> getMyApplyedTasks(ProcessInstanceQueryVo processQueryVo) throws MyException {
+    public PageEntity getMyApplyedTasks(ProcessInstanceQueryVo processQueryVo) throws MyException {
         List<TaskVo> tasks = new ArrayList<>();
+        PageEntity pageEntity = null;
         try {
             Page<TaskVo> page = new Page<>(processQueryVo.getNowPage(), processQueryVo.getPageSize());
             IPage<TaskVo> taskPage = taskInfoDao.getMyApplyedTasks(page, processQueryVo);
@@ -66,12 +69,13 @@ public class TaskService extends BaseProcessService {
                 }
                 task.setVariables(variables);
             }
+            pageEntity=new PageEntity(taskPage.getTotal(),taskPage.getPages(),taskPage.getSize(),taskPage.getCurrent(),tasks);
         } catch (Exception e) {
             e.printStackTrace();
             throw new MyException(CodeEnum.commonException);
 
         }
-        return tasks;
+        return pageEntity;
     }
 
     /**

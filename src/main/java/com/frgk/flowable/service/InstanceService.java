@@ -14,10 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Transactional(rollbackFor = Exception.class)
 @Service
@@ -71,7 +68,8 @@ public class InstanceService extends BaseProcessService {
         }
     }
 
-    public List<ProcessInstanceVo> getFlowableInstances(ProcessInstanceQueryVo queryVo) throws MyException {
+    public PageEntity getFlowableInstances(ProcessInstanceQueryVo queryVo) throws MyException {
+        PageEntity pageEntity = null;
         List<ProcessInstanceVo> instances = new ArrayList<>();
         try {
             List<String> dates = null;
@@ -93,17 +91,18 @@ public class InstanceService extends BaseProcessService {
                     Object object = historicVariableInstance.getValue();
                     variables.put(name, object);
                 }
-                String state = (String) variables.get("state");
                 if (null != instanceVo.getEndTime()) {
                     variables.put("state", "结束");
                 }
                 instanceVo.setVariables(variables);
             }
+            pageEntity = new PageEntity(instancePage.getTotal(), instancePage.getPages(), instancePage.getSize(), instancePage.getCurrent(), instances);
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new MyException(CodeEnum.commonException);
         }
-        return instances;
+        return pageEntity;
     }
 
 }
