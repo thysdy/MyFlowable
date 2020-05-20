@@ -98,13 +98,14 @@ select * from ACT_HI_COMMENT c left join ACT_ID_USER u on c.USER_ID_=u.ID_ where
         t1.START_TIME_ AS startTime,
         t1.END_TIME_ AS endTime,
         t2.FIRST_ AS creator,
-        t1.START_TIME_ AS instanceStartTime,
-        t1.END_TIME_ AS instanceEndTime,
+        t3.START_TIME_ AS instanceStartTime,
+        t3.END_TIME_ AS instanceEndTime,
         t1.PROC_DEF_ID_ AS processDefinitionId
         FROM ACT_HI_TASKINST t1
         LEFT JOIN act_hi_procinst t3 on t3.PROC_INST_ID_=t1.PROC_INST_ID_
         LEFT JOIN act_id_user t2 on t2.ID_=t3.START_USER_ID_
         where t1.ASSIGNEE_=#{query.userCode}
+        order by t1.START_TIME_ desc
     </select>
 
     <!--获取退回节点-->
