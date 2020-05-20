@@ -86,7 +86,7 @@ select * from ACT_HI_COMMENT c left join ACT_ID_USER u on c.USER_ID_=u.ID_ where
         )
         )
         )
-        order by t1.CREATE_TIME_ desc
+        order by t1.CREATE_TIME_ asc
     </select>
     <!--获取我的已办任务-->
     <select id="getMyApplyedTasks" resultType="TaskVo">

@@ -127,7 +127,7 @@ public class CommonListener extends BaseProcessService implements TaskListener, 
             if (null != serviceUrl) {
                 RestTemplate restTemplate = new RestTemplate();
                 new RequestVo();
-                ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity("http://localhost:8214/adverisement/sendMessage", serviceRequestVo, String.class);
+                ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity(serviceUrl, serviceRequestVo, String.class);
             }
         } catch (Exception e) {
         }
