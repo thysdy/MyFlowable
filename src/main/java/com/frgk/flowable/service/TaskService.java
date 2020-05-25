@@ -89,7 +89,6 @@ public class TaskService extends BaseProcessService {
             String message = request.getMessage();
             String userId = request.getUserCode();
             Map<String, Object> variables = request.getVariables();
-            variables.put("state", "进行中");
             for (String id : request.getIds()) {
                 Task task = taskService.createTaskQuery().taskId(id).singleResult();
                 String instanceId = task.getProcessInstanceId();
