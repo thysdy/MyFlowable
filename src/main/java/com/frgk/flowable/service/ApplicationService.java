@@ -109,7 +109,7 @@ public class ApplicationService extends BaseProcessService {
             //设置创建者id
             identityService.setAuthenticatedUserId(param.getCreator());
             Map<String, Object> variables = param.getVariables();
-            variables.put("state", "开始");
+            variables.put("state", "已发起");
             processInstance = runtimeService.createProcessInstanceBuilder()
                     .businessKey(id)
                     .variables(variables)

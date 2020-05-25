@@ -2,7 +2,6 @@ eureka:
   instance:
     prefer-ip-address: true
 #      ip-address: 192.168.0.101
-
   client:
     serviceUrl:
       defaultZone: http://172.17.238.40:8761/eureka/

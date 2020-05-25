@@ -63,9 +63,9 @@ public class TaskService extends BaseProcessService {
                     String name = historicVariableInstance.getVariableName();
                     Object object = historicVariableInstance.getValue();
                     variables.put(name, object);
-                    if (null != task.getInstanceEndTime()) {
-                        variables.put("state", "结束");
-                    }
+//                    if (null != task.getInstanceEndTime()) {
+//                        variables.put("state", "结束");
+//                    }
                 }
                 task.setVariables(variables);
             }

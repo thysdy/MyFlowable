@@ -91,9 +91,9 @@ public class InstanceService extends BaseProcessService {
                     Object object = historicVariableInstance.getValue();
                     variables.put(name, object);
                 }
-                if (null != instanceVo.getEndTime()) {
-                    variables.put("state", "结束");
-                }
+//                if (null != instanceVo.getEndTime()) {
+//                    variables.put("state", "结束");
+//                }
                 instanceVo.setVariables(variables);
             }
             pageEntity = new PageEntity(instancePage.getTotal(), instancePage.getPages(), instancePage.getSize(), instancePage.getCurrent(), instances);
