@@ -1,9 +1,7 @@
 package com.frgk.flowable.Listener;
 
 import com.alibaba.druid.support.json.JSONUtils;
-import com.alibaba.fastjson.JSON;
 import com.frgk.flowable.common.CodeEnum;
-import com.frgk.flowable.common.HttpUtil4;
 import com.frgk.flowable.common.MyException;
 import com.frgk.flowable.dao.UserDao;
 import com.frgk.flowable.entity.RequestVo;
@@ -11,7 +9,6 @@ import com.frgk.flowable.entity.ServiceRequestVo;
 import com.frgk.flowable.entity.User;
 import com.frgk.flowable.flowable.BaseProcessService;
 import lombok.SneakyThrows;
-import org.aspectj.apache.bcel.classfile.Code;
 import org.flowable.common.engine.impl.el.FixedValue;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.ExecutionListener;
